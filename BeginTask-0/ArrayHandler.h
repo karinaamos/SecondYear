@@ -6,7 +6,7 @@ private:
     int8_t _min;
     T* _array;
     T* _id_array;
-    size_t _max_size;
+    size_t _max_size; //sdfsefgsgsegse
     size_t _count;
 public:
     ArrayHandler(int8_t max_size = 10) {
