@@ -1,66 +1,67 @@
-
+#include <cstdint>
+#include <cstring>
+#include <iostream>
 template<typename T>
 class ArrayHandler {
 private:
-    int8_t _max;
-    int8_t _min;
+    size_t _size;
     T* _array;
-    T* _id_array;
-    size_t _max_size; //sdfsefgsgsegse
+    T _max;
+    T _min;
     size_t _count;
 public:
-    ArrayHandler(int8_t max_size = 10) {
-        _max_size = max_size;
-        _array = new int8_t[max_size];
-        _id_array = new int8_t[10];
-        _max = INT32_MIN;
-        _min = INT32_MAX;
+    ArrayHandler(size_t size = 10) {
+        _size = size;
+        _array = new T[_size];
+        _max = std::numeric_limits<T>::min();
+        _min = std::numeric_limits<T>::max();
         _count = 0;
-        for (int i; i < 10; i++){
-            _id_array[i] = -1;
-        }
     }
 
     void AppendElem(T elem) {
-        if(elem > _max){
-            _max = elem;
-        }
-        if (elem < _min){
-            _min = elem;
-        }
-        if (_count == _max_size) {
-            _max_size += 10;
-            int8_t* new_arr = new int8_t[_max_size * 2];
-            std::memcpy(new_arr, _array, _count*sizeof(int8_t));
-            delete [] _array;
+        if (_count == _size) {
+            _size *= 7;
+            T* new_arr = new T[_size];
+            std::memcpy(new_arr, _array, _count * sizeof(T));
+            delete[] _array;
             _array = new_arr;
         }
         _array[_count] = elem;
+        if (elem > _max) {
+            _max = elem;
+        }
+        if (elem < _min) {
+            _min = elem;
+        }
         _count++;
     }
 
     bool IsContains(T elem) {
+        std::sort(_array, _array + _count);
+        int l = 0, r = _count - 1;
+        while (l <= r) {
+            int ind = l + (r - l) / 2;
+            if (_array[ind] == elem) {
+                return true;
+            } else if (_array[ind] < elem) {
+                l = ind + 1;
+            } else {
+                r = ind - 1;
+            }
+        }
         return false;
+        
     }
 
     T GetMax() {
-        for (int i = 0; i < _count; i++) {
-            if (_max < _array[i])
-                _max = _array[i];
-        }
         return _max;
     }
 
     T GetMin() {
-        for (int i = 0; i < _count; i++) {
-            if (_min > _array[i])
-                _min = _array[i];
-        }
         return _min;
     }
 
     ~ArrayHandler() {
-        delete [] _array;
+        delete[] _array;
     }
-
 };
