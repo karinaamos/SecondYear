@@ -1,69 +1,63 @@
 #include "Set.h"
-#include <cmath>
+#include <math.h>
 
-Set::Set(size_t mp) : _bitField(mp), _maxPower(mp) {
-}
-Set::Set(const Set &s) : _maxPower(s._maxPower), _bitField(s._bitField){
-
-} 
-Set::Set(const BitField &bf) : _maxPower(bf.GetLength()), _bitField(bf){
-
+Set::Set(size_t mp) : _bitField(mp), _maxPower(mp){
 }
 
-size_t Set::GetMaxPower() const{
-    return _maxPower;
-}    
-void Set::InsElem(const uint64_t Elem){
-    if (Elem<_maxPower){
-        _bitField.SetBit(Elem);
-    }
-}
-void Set::DelElem(const uint64_t Elem){
-    if (Elem < _maxPower){
-        _bitField.ClrBit(Elem);
-    }
-}
-bool Set::IsMember(const uint64_t Elem) const{
-    return _bitField.GetBit(Elem);
+Set::Set(const Set& set) : _bitField(set._bitField), _maxPower(set._maxPower){
 }
 
-
-bool Set::operator== (const Set &s) const{
-    return _bitField == s._bitField;
+Set::Set(const BitField& bf)  : _bitField(bf), _maxPower(bf.GetLength()){
 }
+
+void Set::InsElem(uint64_t elem){
+    _bitField.SetBit(elem);
+}
+
+void Set::DelElem(uint64_t elem){
+    _bitField.ClrBit(elem);
+}
+
+bool Set::IsMember(uint64_t elem) const{
+    return _bitField.GetBit(elem);
+}
+
+bool Set::operator==(const Set& tmp) const{
+    return _bitField == tmp._bitField;
+}
+
+Set& Set::operator=(const Set& tmp){
+    _maxPower = tmp._maxPower;
+    _bitField = tmp._bitField;
+    return *this;
+}
+
+Set Set::operator+(const Set& tmp){
+    return _bitField | tmp._bitField;
+}
+
+Set Set::operator+(uint64_t elem){
+    Set s(*this);
+    s.InsElem(elem);
+    return s;
+}
+
+Set Set::operator-(uint64_t elem){
+    Set s(*this);
+    s.DelElem(elem);
+    return s;
+}
+Set Set::operator*(const Set& ymp){
+    return _bitField & ymp._bitField;
+}
+Set Set::operator~(){
+    return Set(~_bitField);
+}
+
 bool Set::operator!= (const Set &s) const{
     return (_bitField == s._bitField) == 0;
 }
-Set& Set::operator=(const Set &s){
-    _maxPower = s._maxPower;
-    _bitField = s._bitField;
-    return *this;
-}
-Set Set::operator+ (const uint64_t Elem){
-    Set result(*this);
-    result.InsElem(Elem);
-    return result;
-}
-                                  
-Set Set::operator- (const uint64_t Elem){
-    Set result(*this);
-    result.DelElem(Elem);
-    return result;
-}
-                                   
-Set Set::operator+ (const Set &s){
-    Set result(_maxPower);
-    result._bitField = _bitField | s._bitField;
-    return result;
-}
-Set Set::operator* (const Set &s){
-    Set result(_maxPower);
-    result._bitField = _bitField & s._bitField;
-    return result;
-}
-Set Set::operator~ (){
-    return Set(~_bitField);
-}
+
 std::vector<uint64_t> Set::GetPrimary(){
     BitField f = _bitField;
     std::vector<uint64_t> array;
