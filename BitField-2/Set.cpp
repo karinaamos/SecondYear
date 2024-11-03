@@ -4,26 +4,30 @@
 Set::Set(size_t mp) : _bitField(mp), _maxPower(mp){
 }
 
-Set::Set(const Set& set) : _bitField(set._bitField), _maxPower(set._maxPower){
+Set::Set(const Set& s) : _bitField(s._bitField), _maxPower(s._maxPower){
 }
 
 Set::Set(const BitField& bf)  : _bitField(bf), _maxPower(bf.GetLength()){
 }
 
-void Set::InsElem(uint64_t elem){
-    _bitField.SetBit(elem);
+void Set::InsElem(uint64_t Elem){
+    _bitField.SetBit(Elem);
 }
 
-void Set::DelElem(uint64_t elem){
-    _bitField.ClrBit(elem);
+void Set::DelElem(uint64_t Elem){
+    _bitField.ClrBit(Elem);
 }
 
-bool Set::IsMember(uint64_t elem) const{
-    return _bitField.GetBit(elem);
+bool Set::IsMember(uint64_t Elem) const{
+    return _bitField.GetBit(Elem);
 }
 
-bool Set::operator==(const Set& tmp) const{
-    return _bitField == tmp._bitField;
+bool Set::operator==(const Set& s) const{
+    return _bitField == s._bitField;
+}
+
+bool Set::operator!= (const Set &s) const{
+    return (_bitField == s._bitField) == 0;
 }
 
 Set& Set::operator=(const Set& tmp){
@@ -32,30 +36,28 @@ Set& Set::operator=(const Set& tmp){
     return *this;
 }
 
-Set Set::operator+(const Set& tmp){
-    return _bitField | tmp._bitField;
+Set Set::operator+(uint64_t Elem){
+    Set result(*this);
+    result.InsElem(Elem);
+    return result;
 }
 
-Set Set::operator+(uint64_t elem){
-    Set s(*this);
-    s.InsElem(elem);
-    return s;
+Set Set::operator-(uint64_t Elem){
+    Set result(*this);
+    result.DelElem(Elem);
+    return result;
 }
 
-Set Set::operator-(uint64_t elem){
-    Set s(*this);
-    s.DelElem(elem);
-    return s;
+Set Set::operator+(const Set& s){
+    return _bitField | s._bitField;
 }
-Set Set::operator*(const Set& ymp){
-    return _bitField & ymp._bitField;
+
+Set Set::operator*(const Set& s){
+    return _bitField & s._bitField;
 }
+
 Set Set::operator~(){
     return Set(~_bitField);
-}
-
-bool Set::operator!= (const Set &s) const{
-    return (_bitField == s._bitField) == 0;
 }
 
 std::vector<uint64_t> Set::GetPrimary(){
