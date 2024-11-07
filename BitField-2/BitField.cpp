@@ -85,6 +85,12 @@ bool BitField::operator==(const BitField& tmp) const{
 BitField BitField::operator~(){
     BitField cpy = BitField(*this);
     for (size_t i=0; i<_sizeBit; i++){
+        if (GetBit(i)){
+            cpy.ClrBit(i);
+        }
+        else{
+            cpy.SetBit(i);
+        }
         cpy._mem[i] =~ cpy._mem[i]; 
     }
     return cpy;
