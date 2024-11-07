@@ -91,7 +91,6 @@ BitField BitField::operator~(){
         else{
             cpy.SetBit(i);
         }
-        cpy._mem[i] =~ cpy._mem[i]; 
     }
     return cpy;
 }
