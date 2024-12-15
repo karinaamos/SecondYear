@@ -94,3 +94,78 @@ BitField BitField::operator~(){
     }
     return cpy;
 }
+
+
+size_t BitField:: GetByteIndex(size_t num_id) const {
+    return bit_off[num_id] / 8;
+}
+
+size_t BitField:: GetBitOffset(size_t num_id) const {
+    return bit_off[num_id] % 8;
+}
+
+size_t BitField:: GetBitCount(unsigned int num) const {
+    if (num == 0){
+        return 1; 
+    }
+    return std::ceil(std::log2(num + 1));
+}
+
+void BitField:: AddNumber(unsigned int number) {
+    size_t bits = GetBitCount(number);
+    bit_off.push_back(data.size() * 8);
+    bit_counts.push_back(bits);
+    num_numbers++;
+    size_t new_bits_needed = data.size() * 8 + bits;
+    size_t new_bytes_needed = (new_bits_needed + 7) / 8; // Округляем до байтов
+    if (new_bytes_needed > data.size()){
+        data.resize(new_bytes_needed, 0);
+    }
+    SetNumber(num_numbers -1, number);
+}
+
+void BitField:: SetNumber(size_t index, unsigned int number) {
+    if (index >= num_numbers){ 
+        throw std::out_of_range("Error");
+    }
+    size_t byte_id = GetByteIndex(index);
+    size_t bit_off = GetBitOffset(index);
+    size_t bits = bit_counts[index]; // Используем сохраненное количество битов
+    unsigned int mask = (1u << bits) - 1; // Маска для выделения нужных битов
+    number &= mask; // Убираем лишние биты из числа
+    // Устанавливаем число в битовом поле
+    for (size_t i = 0; i < bits; ++i) {
+        if ((number >> i) & 1) {
+            data[byte_id] |= (1u << (bit_off + i));
+        } 
+        else{
+            data[byte_id] &= ~(1u << (bit_off + i));
+        }
+    }
+}
+
+unsigned int BitField:: GetNumber(size_t index) const {
+    if (index >= num_numbers){
+        throw std::out_of_range("Error");
+    }
+    size_t byte_id = GetByteIndex(index);
+    size_t bit_off = GetBitOffset(index);
+    size_t bits = bit_counts[index]; // Используем сохраненное количество битов
+    unsigned int mask = (1u << bits) - 1;
+
+    return (data[byte_id] >> bit_off) & mask;
+}
+
+size_t BitField:: GetTotalBits() const {
+    size_t t_bit = 0;
+    for (size_t bits : bit_counts) {
+        t_bit += bits;
+    }
+    return t_bit;
+}
+
+size_t BitField:: GetNumNumbers() const { 
+    return num_numbers; 
+}
+
+
