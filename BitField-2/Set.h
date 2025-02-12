@@ -5,30 +5,40 @@
 class Set
 {
 private:
-  size_t _maxPower;       // максимальная мощность множества
-  BitField _bitField; // битовое поле для хранения характеристического вектора
+    size_t _maxPower;       // максимальная мощность множества
+    BitField _bitField; // битовое поле для хранения характеристического вектора
 public:
-  Set(size_t mp);
-  Set(const Set &set);       // конструктор копирования
-  Set(const BitField &bf); // конструктор преобразования типа
-  operator BitField(){; // преобразование типа к битовому полю
-    return _bitField;
-  }
+    Set(size_t mp);
+    Set(const Set &s);       // конструктор копирования
+    Set(const BitField &bf); // конструктор преобразования типа
+    operator BitField(){ // преобразование типа к битовому полю
+        return _bitField;
+    }
   // доступ к битам
-  size_t GetMaxPower(void) const;     // максимальная мощность множества
-  void InsElem(const uint64_t Elem);       // включить элемент в множество
-  void DelElem(const uint64_t Elem);       // удалить элемент из множества
-  bool IsMember(const uint64_t Elem) const; // проверить наличие элемента в множестве
+    size_t GetMaxPower(void) const;     // максимальная мощность множества
+    void InsElem(const uint64_t Elem);       // включить элемент в множество
+    void DelElem(const uint64_t Elem);       // удалить элемент из множества
+    bool IsMember(const uint64_t Elem) const; // проверить наличие элемента в множестве
   // теоретико-множественные операции
-  bool operator== (const Set &s) const; // сравнение
-  bool operator!= (const Set &s) const; // сравнение
-  Set& operator=(const Set &s);  // присваивание
-  Set operator+ (const uint64_t Elem); // объединение с элементом
+    bool operator== (const Set &s) const; // сравнение
+    bool operator!= (const Set &s) const; // сравнение
+    Set& operator=(const Set &s);  // присваивание
+    Set operator+ (const uint64_t Elem); // объединение с элементом
                                    // элемент должен быть из того же универса
-  Set operator- (const uint64_t Elem); // разность с элементом
+    Set operator- (const uint64_t Elem); // разность с элементом
                                    // элемент должен быть из того же универса
-  Set operator+ (const Set &s);  // объединение
-  Set operator* (const Set &s);  // пересечение
-  Set operator~ ();           // дополнение
-  std::vector<uint64_t> GetPrimary(); // Выдать простые числа множества
+    Set operator+ (const Set &s);  // объединение
+    Set operator* (const Set &s);  // пересечение
+    Set operator~ ();           // дополнение
+    std::vector<uint64_t> GetPrimary(); // Выдать простые числа множества
+    friend std::istream& operator>>(std::istream& istr, Set& set);
+    friend std::ostream& operator<<(std::ostream& istr, const Set& set){
+        for (int i = 0; i < set._maxPower; i++){
+            if (set._bitField.GetBit(i) == 1){
+                std::cout<<i<<" ";
+            }
+        }
+        std::cout<<"\n";
+        return istr;
+    }
 };

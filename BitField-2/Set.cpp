@@ -1,64 +1,63 @@
 #include "Set.h"
 #include <math.h>
-#include "BitField.h"
-#include <vector>
 
-Set::Set(size_t mp):_bitField(mp){
-    _maxPower = mp;
+Set::Set(size_t mp) : _bitField(mp), _maxPower(mp){
 }
-Set::Set(const Set &set): _bitField(set._bitField), _maxPower(set._maxPower){}       // конструктор копирования
-Set::Set(const BitField &bf): _bitField(bf),  _maxPower(bf.GetLength()){} // конструктор преобразования типа
 
-// доступ к битам
-size_t Set::GetMaxPower(void) const{    // максимальная мощность множества
-    return _maxPower;
+Set::Set(const Set& set) : _bitField(set._bitField), _maxPower(set._maxPower){
 }
-void Set::InsElem(const uint64_t Elem){       // включить элемент в множество
-    _bitField.SetBit(Elem);
+
+Set::Set(const BitField& bf)  : _bitField(bf), _maxPower(bf.GetLength()){
 }
-void Set::DelElem(const uint64_t Elem){       // удалить элемент из множества
-    _bitField.ClrBit(Elem);
+
+void Set::InsElem(uint64_t elem){
+    _bitField.SetBit(elem);
 }
-bool Set::IsMember(const uint64_t Elem) const { // проверить наличие элемента в множестве
-    return _bitField.GetBit(Elem);
+
+void Set::DelElem(uint64_t elem){
+    _bitField.ClrBit(elem);
 }
-// теоретико-множественные операции
-bool Set::operator== (const Set &s) const{ // сравнение
-    return _bitField == s._bitField;
+
+bool Set::IsMember(uint64_t elem) const{
+    return _bitField.GetBit(elem);
 }
-bool Set::operator!= (const Set &s) const{ // сравнение
-    if (_bitField == s._bitField){
-        return false;
-    }
-    return true;
+
+bool Set::operator==(const Set& tmp) const{
+    return _bitField == tmp._bitField;
 }
-Set& Set::operator=(const Set& s){  // присваивание
-    _maxPower = s.GetMaxPower();
-    _bitField = s._bitField;
+
+Set& Set::operator=(const Set& tmp){
+    _maxPower = tmp._maxPower;
+    _bitField = tmp._bitField;
     return *this;
 }
-Set Set::operator+ (const uint64_t Elem){ // объединение с элементом
-                                   // элемент должен быть из того же универса
+
+Set Set::operator+(const Set& tmp){
+    return _bitField | tmp._bitField;
+}
+
+Set Set::operator+(uint64_t elem){
     Set s(*this);
-    s.InsElem(Elem);
+    s.InsElem(elem);
     return s;
 }
-Set Set::operator- (const uint64_t Elem){ // разность с элементом
-                                   // элемент должен быть из того же универса
+
+Set Set::operator-(uint64_t elem){
     Set s(*this);
-    s.DelElem(Elem);
+    s.DelElem(elem);
     return s;
 }
-Set Set::operator+ (const Set& s){  // объединение
-    return _bitField | s._bitField;
+Set Set::operator*(const Set& ymp){
+    return _bitField & ymp._bitField;
 }
-Set Set::operator* (const Set &s){  // пересечение
-    return _bitField & s._bitField;
-}
-Set Set::operator~ (){          // дополнение
+Set Set::operator~(){
     return Set(~_bitField);
 }
-// Выдать простые числа множества
+
+bool Set::operator!= (const Set &s) const{
+    return (_bitField == s._bitField) == 0;
+}
+
 std::vector<uint64_t> Set::GetPrimary(){
     BitField f = _bitField;
     std::vector<uint64_t> array;
